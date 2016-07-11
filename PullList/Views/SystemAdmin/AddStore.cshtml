@@ -1,0 +1,17 @@
+﻿@model PullList.Models.Store
+
+<h2>Add Store</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="form">
+        @Html.Partial("_StoreForm", Model)
+        <p>
+            <input type="submit" value="Save" />
+            @Html.ActionLink("Cancel", "Stores", null, new { @class = "button" })
+        </p>
+    </div>
+}

@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>PullList</title>
+    <link rel="icon" href="/favicon.ico" type="image/ico" />
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,400italic,700italic,700' rel='stylesheet' type='text/css'>
+    @Styles.Render("~/css/pulllist")
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="clearfix">
+                <a href="@(ViewBag.SubscriptionId != null ? Url.Action("Subscription", "PullList", new { id = ViewBag.SubscriptionId }) : Url.Action("/", "About"))" class="title pull-left">
+                    <img src="~/images/logo.jpg" title="PullList" />
+                    <h3><span class="green-text">Pull</span>List</h3>
+                </a>
+                <nav class="pull-right clearfix hidden-xs">
+                    @if (Request.IsAuthenticated)
+                    {
+                        using (Html.BeginForm("LogOut", "Account", FormMethod.Post, new { id = "logoutForm" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <a href="javascript:document.getElementById('logoutForm').submit()">Log Out</a>
+                        }
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Log In", "Login", "Account", null, new { @class = (ViewBag.NavSelected == PullList.Models.NavSection.Login ? "selected" : "") })
+                    }
+                    @Html.ActionLink("About", "/", "About", null, new { @class = (ViewBag.NavSelected == PullList.Models.NavSection.About ? "selected" : "") })
+                    @if (Request.IsAuthenticated)
+                    {                        
+                        if(ViewBag.SubscriptionId != null)
+                        {
+                            @Html.ActionLink("Your Pull List", "Subscription", "PullList", new { id = ViewBag.SubscriptionId }, new { @class = (ViewBag.NavSelected == PullList.Models.NavSection.PullList ? "selected" : "") })
+                        }
+                        if (ViewBag.Employee != null)
+                        {
+                            string storeName = ((PullList.Models.Employee)ViewBag.Employee).Store.Name;
+                            @Html.ActionLink(storeName, "/", "Store", null, new { @class = (ViewBag.NavSelected == PullList.Models.NavSection.Employee ? "selected" : "") })
+                        }
+                        <span>Welcome @ViewBag.UserName</span>
+                    }
+                </nav>
+                <button class="fa fa-bars pull-right margin-top visible-xs"></button>
+            </div>
+            <ul id="mobile-nav" class="display-none">
+                @if (Request.IsAuthenticated)
+                {
+                    <li>
+                        @Html.ActionLink("Dashboard", "/", "Home", "Dashboard")
+                    </li>
+                }
+                <li>
+                    @Html.ActionLink("About", "About", "Home")
+                </li>
+                <li>
+                    @if (Request.IsAuthenticated)
+                    {
+                        using (Html.BeginForm("LogOut", "Account", FormMethod.Post, new { id = "logoutForm" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <a href="javascript:document.getElementById('logoutForm').submit()">Log Out</a>
+                        }
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Log In", "Login", "Account", null, new { @class = (ViewBag.NavSelected == PullList.Models.NavSection.Login ? "selected" : "") })
+                    }
+                </li>
+            </ul>
+        </div>
+    </header>
+
+
+    <div class="container">
+        @if(ViewBag.SideNav == PullList.Models.SideNav.Store)
+        {
+            <div class="row">
+                <div class="col-xs-4 col-sm-3 col-lg-2">
+                    <ul class="side-nav">
+                        <li>
+                            @Html.ActionLink("Pull Lists by Title", "PullLists", "Store", new { id = PullList.Models.PullListFilter.Title.ToString() }, null)
+                        </li>
+                        <li>
+                            @Html.ActionLink("Pull Lists by User", "PullLists", "Store", new { id = PullList.Models.PullListFilter.User.ToString() }, null)
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-xs-8 col-sm-9 col-lg-10">
+                    @RenderBody()
+                </div>
+            </div>
+        }
+        else
+        {
+            @RenderBody()   
+        }
+    </div>
+
+    @Scripts.Render("~/js/pulllist")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,25 @@
+﻿@using PullList.Models
+@model StorePullVM
+
+<h2>Pull Lists by @Model.Filter.ToString()</h2>
+
+@if (Model.Filter == PullListFilter.Title && Model.Series != null && Model.Series.Count() > 0)
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Number of Pulls</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Series series in Model.Series)
+            {
+                <tr>
+                    <td>@series.Title</td>
+                    <td>@series.Count</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

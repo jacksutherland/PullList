@@ -1,0 +1,65 @@
+﻿@using PullList.Models;
+@model PullListVM
+
+@if(!Model.SubscriptionId.HasValue)
+{
+    <h3>You have not created any pull lists yet</h3>
+}
+else
+{
+    if (Model.Subscriptions.Count() > 1)
+    {
+        <div class="row">
+            <div class="col-xs-9">
+                @using (Html.BeginForm("Search", null, FormMethod.Get))
+                {
+                    <input name="subscription" type="hidden" value="@Model.SubscriptionId" />
+                    <input name="title" type="text" class="half-width" placeholder="Search for a series" />
+                    <button class="margin-left">Search</button>
+                }
+            </div>
+            <div class="col-xs-3">
+                @using (Html.BeginForm("GetSubscription", null, FormMethod.Get))
+                {
+                    <div class="pull-right">
+                        <select id="subscription" name="subscription" onchange="this.form.submit()">
+                            @foreach (Subscription subscription in Model.Subscriptions)
+                            {
+                                <option value="@subscription.Id" @(Model.SubscriptionId == subscription.Id ? " selected" : "")>
+                                    @subscription.Store.Name
+                                </option>
+                            }
+                        </select>
+                    </div>
+                }
+            </div>
+        </div>
+        <h2>Your Pull List at @Model.StoreName</h2>
+    }
+
+    <div>
+        <ul class="pull-list">
+            @foreach (Pull pull in Model.Pulls)
+            {
+                <li class="pull-left" title="@pull.Series.Title">
+                    @if(string.IsNullOrEmpty(pull.Series.Image))
+                    {
+                        <div class="thumbnail">@pull.Series.Title</div>       
+                    }
+                    else
+                    { 
+                        <img src="~/@pull.Series.Image" title="@pull.Series.Title" />
+                    }
+                    <h4 class="text-center">@pull.Series.Title</h4>
+                    <h5>@pull.Series.Publisher.Name</h5>
+                    <h5>Added @pull.StartDate.ToShortDateString()</h5>
+                    @using (Html.BeginForm("DeletePull", null, new { id = pull.Id, subscription = Model.SubscriptionId.Value }, FormMethod.Post, new { onsubmit = "return confirm(\"Are you sure you want to remove this title from your pull list?\")" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <button class="pull-button fa fa-trash"></button>
+                    }
+                </li>
+            }
+        </ul>
+    </div>
+}

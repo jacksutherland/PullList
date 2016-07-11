@@ -1,0 +1,49 @@
+﻿@using PullList.Models;
+@model SeriesSearchVM
+
+<h2>Series Search</h2>
+
+@using (Html.BeginForm("Search", null, FormMethod.Get))
+{
+    <div class="clearfix margin-bottom">
+        <input name="subscription" type="hidden" value="@Model.SubscriptionId" />
+        <input name="title" type="text" class="margin-top0 half-width pull-left" placeholder="Search for a series" value="@Model.Title" />
+        <button class="pull-left margin-top0 margin-left">Search</button>
+    </div>
+}
+
+@if (Model.Series == null)
+{
+    <h3>Please enter part of a series title to search</h3>
+}
+else if (Model.Series.Count() == 0)
+{
+    <h3>No series were found containing '@Model.Title' in the title</h3>
+}
+else
+{
+    <div>
+        <ul class="pull-list">
+            @foreach (Series series in Model.Series)
+            {
+                <li class="pull-left" title="@series.Title">
+                    @if (string.IsNullOrEmpty(series.Image))
+                    {
+                        <div class="thumbnail">@series.Title</div>
+                    }
+                    else
+                    {
+                        <img src="~/@series.Image" title="@series.Title" />
+                    }
+                    <h4 class="text-center">@series.Title</h4>
+                    <h5>@series.Publisher.Name</h5>
+                    @using (Html.BeginForm("AddPull", null, new { id = series.Id, subscription = Model.SubscriptionId }, FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <button class="pull-button fa fa-plus-square"></button>
+                    }
+                </li>
+            }
+        </ul>
+    </div>
+}
